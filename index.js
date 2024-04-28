@@ -27,6 +27,13 @@ async function run() {
 
     const craftItemCollection = client.db("Art-Craft").collection("craftItem");
 
+    app.post("/craft", async (req, res) => {
+      const newItem = req.body;
+      console.log(newItem);
+      const result = await craftItemCollection.insertOne(newItem);
+      res.send(result);
+    });
+
     app.get("/craft", async (req, res) => {
       const cursor = craftItemCollection.find();
       const result = await cursor.toArray();
@@ -48,12 +55,43 @@ async function run() {
       res.send(result);
     });
 
-    app.delete('/myCraft/:id', async (req, res) => {
+    app.put("/myCraft/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedCraft = req.body;
+
+      const coffee = {
+        $set: {
+          image: updatedCraft.image,
+          itemName: updatedCraft.itemName,
+          subcategoryName: updatedCraft.subcategoryName,
+          shortDescription: updatedCraft.shortDescription,
+          price: updatedCraft.price,
+          rating: updatedCraft.rating,
+          customization: updatedCraft.customization,
+          processingTime: updatedCraft.processingTime,
+          stockStatus: updatedCraft.stockStatus,
+        },
+      };
+
+      const result = await coffeeCollection.updateOne(filter, coffee, options);
+      res.send(result);
+    });
+
+    app.delete("/coffee/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await coffeeCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    app.delete("/myCraft/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await craftItemCollection.deleteOne(query);
       res.send(result);
-  })
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
