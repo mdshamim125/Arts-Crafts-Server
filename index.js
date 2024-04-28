@@ -61,7 +61,7 @@ async function run() {
       const options = { upsert: true };
       const updatedCraft = req.body;
 
-      const coffee = {
+      const craft = {
         $set: {
           image: updatedCraft.image,
           itemName: updatedCraft.itemName,
@@ -75,7 +75,7 @@ async function run() {
         },
       };
 
-      const result = await coffeeCollection.updateOne(filter, coffee, options);
+      const result = await craftItemCollection.updateOne(filter, craft, options);
       res.send(result);
     });
 
