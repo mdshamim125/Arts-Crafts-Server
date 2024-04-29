@@ -26,6 +26,7 @@ async function run() {
     await client.connect();
 
     const craftItemCollection = client.db("Art-Craft").collection("craftItem");
+    const artItemCollection = client.db("Art-Craft").collection("artItem");
 
     app.post("/craft", async (req, res) => {
       const newItem = req.body;
@@ -55,6 +56,23 @@ async function run() {
       res.send(result);
     });
 
+
+    //data get from database which are manually added
+    app.get("/art", async (req, res) => {
+      const cursor = artItemCollection.find();
+      const result = await cursor.toArray();
+      console.log(result);
+      res.send(result);
+    });
+
+    app.get("/art/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await artItemCollection.findOne(query);
+      res.send(result);
+    });
+
+    
     app.put("/myCraft/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
@@ -75,7 +93,11 @@ async function run() {
         },
       };
 
-      const result = await craftItemCollection.updateOne(filter, craft, options);
+      const result = await craftItemCollection.updateOne(
+        filter,
+        craft,
+        options
+      );
       res.send(result);
     });
 
@@ -92,6 +114,7 @@ async function run() {
       const result = await craftItemCollection.deleteOne(query);
       res.send(result);
     });
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
