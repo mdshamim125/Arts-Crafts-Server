@@ -1,17 +1,19 @@
 const express = require("express");
 const cors = require("cors");
-require('dotenv').config();
+require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 5000;
 
 // middleware
-app.use(cors());
 app.use(express.json());
+app.use(
+  cors({
+    origin: ["http://localhost:5173/", "https://add-and-craft.web.app/"],
+  })
+);
 
-
-const uri =
-  `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.s1le0vj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.s1le0vj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -25,7 +27,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const craftItemCollection = client.db("Art-Craft").collection("craftItem");
     const artItemCollection = client.db("Art-Craft").collection("artItem");
@@ -58,7 +60,6 @@ async function run() {
       res.send(result);
     });
 
-
     //data get from database which are manually added
     app.get("/art", async (req, res) => {
       const cursor = artItemCollection.find();
@@ -73,7 +74,6 @@ async function run() {
       const result = await artItemCollection.findOne(query);
       res.send(result);
     });
-
 
     app.put("/myCraft/:id", async (req, res) => {
       const id = req.params.id;
@@ -116,7 +116,6 @@ async function run() {
       const result = await craftItemCollection.deleteOne(query);
       res.send(result);
     });
-
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
