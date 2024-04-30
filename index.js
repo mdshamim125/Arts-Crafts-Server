@@ -9,7 +9,11 @@ const port = process.env.PORT || 5000;
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://add-and-craft.web.app"],
+    origin: [
+      "http://localhost:5173",
+      "https://add-and-craft.web.app",
+      "https://art-craft-server-zeta.vercel.app",
+    ],
   })
 );
 
@@ -67,22 +71,7 @@ async function run() {
       res.send(result);
     });
 
-    //data get from database which are manually added
-    app.get("/art", async (req, res) => {
-      const cursor = artItemCollection.find();
-      const result = await cursor.toArray();
-      console.log(result);
-      res.send(result);
-    });
-
-    app.get("/art/:id", async (req, res) => {
-      const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
-      const result = await artItemCollection.findOne(query);
-      res.send(result);
-    });
-
-    app.put("/myCraft/:id", async (req, res) => {
+    app.put("/craft/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
       const options = { upsert: true };
@@ -107,6 +96,21 @@ async function run() {
         craft,
         options
       );
+      res.send(result);
+    });
+
+    //data get from database which are manually added
+    app.get("/art", async (req, res) => {
+      const cursor = artItemCollection.find();
+      const result = await cursor.toArray();
+      console.log(result);
+      res.send(result);
+    });
+
+    app.get("/art/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await artItemCollection.findOne(query);
       res.send(result);
     });
 
