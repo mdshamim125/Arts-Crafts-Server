@@ -9,7 +9,7 @@ const port = process.env.PORT || 5000;
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:5173/", "https://add-and-craft.web.app/"],
+    origin: ["http://localhost:5173", "https://add-and-craft.web.app"],
   })
 );
 
@@ -56,6 +56,13 @@ async function run() {
     app.get("/myCraft/:email", async (req, res) => {
       const email = req.params.email;
       const query = { userEmail: email };
+      const result = await craftItemCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    app.get("/myCraft/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
       const result = await craftItemCollection.find(query).toArray();
       res.send(result);
     });
